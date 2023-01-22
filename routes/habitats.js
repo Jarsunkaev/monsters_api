@@ -4,7 +4,7 @@ const pool = require("../db");
 const router = Router();
 
 router.get("/", (request, response, next) => {
-  pool.query("SELECT * FROM monsters ORDER BY id ASC", (err, res) => {
+  pool.query("SELECT * FROM habitats ORDER BY id ASC", (err, res) => {
     if (err) return next(err);
 
     response.json(res.rows);
@@ -14,7 +14,7 @@ router.get("/", (request, response, next) => {
 router.get("/:id", (request, response, next) => {
   const { id } = request.params;
 
-  pool.query("SELECT * FROM monsters WHERE id = $1", [id], (err, res) => {
+  pool.query("SELECT * FROM habitats WHERE id = $1", [id], (err, res) => {
     if (err) return next(err);
 
     response.json(res.rows);
@@ -22,22 +22,22 @@ router.get("/:id", (request, response, next) => {
 });
 
 router.post("/", (request, response, next) => {
-  const { name, personality } = request.body;
+  const { name, climate, temperature } = request.body;
 
   pool.query(
-    "INSERT INTO monsters(name, personality) VALUES($1, $2)",
-    [name, personality],
+    "INSERT INTO habitats(name, climate, temperature) VALUES($1, $2, $3)",
+    [name, climate, temperature],
     (err, res) => {
       if (err) return next(err);
 
-      response.redirect("/monsters");
+      response.redirect("/habitats");
     }
   );
 });
 
 router.put("/:id", (request, response, next) => {
   const { id } = request.params;
-  const keys = ["name", "personality"];
+  const keys = ["name", "climate, temperature"];
   const fields = [];
 
   keys.forEach((key) => {
@@ -46,12 +46,12 @@ router.put("/:id", (request, response, next) => {
 
   fields.forEach((field, index) => {
     pool.query(
-      `UPDATE monsters SET ${field}=($1) WHERE id=($2)`,
+      `UPDATE habitats SET ${field}=($1) WHERE id=($2)`,
       [request.body[field], id],
       (err, res) => {
         if (err) return next(err);
 
-        if (index === fields.length - 1) response.redirect("/monsters");
+        if (index === fields.length - 1) response.redirect("/habitats");
       }
     );
   });
@@ -60,10 +60,10 @@ router.put("/:id", (request, response, next) => {
 router.delete("/:id", (request, response, next) => {
   const { id } = request.params;
 
-  pool.query("DELETE FROM monsters WHERE id=($1)", [id], (err, res) => {
+  pool.query("DELETE FROM habitats WHERE id=($1)", [id], (err, res) => {
     if (err) return next(err);
 
-    response.redirect("/monsters");
+    response.redirect("/habitats");
   });
 });
 
